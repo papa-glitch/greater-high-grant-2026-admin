@@ -17,7 +17,9 @@ const pool = DATABASE_URL ? new Pool({ connectionString: DATABASE_URL, ssl: { re
 
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
-app.use(express.static('public'));
+app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+app.get('/style.css', (req, res) => res.sendFile(__dirname + '/style.css'));
+app.get('/app.js', (req, res) => res.sendFile(__dirname + '/app.js'));
 
 function sign(value) {
   return crypto.createHmac('sha256', SESSION_SECRET).update(value).digest('hex');
@@ -134,6 +136,8 @@ app.patch('/api/admin/applications/:id', requireAdmin, async (req,res)=>{
   } catch(e){ console.error(e); res.status(500).json({error:'Unable to update application.'}); }
 });
 
-app.get('/admin', (req,res)=>res.sendFile(require('path').join(__dirname,'public','admin.html')));
-
+app.get('/admin', (req,res)=>res.sendFile(__dirname + '/admin.html'));
+app.get('/admin.css', (req,res)=>res.sendFile(__dirname + '/admin.css'));
+app.get('/admin.js', (req,res)=>res.sendFile(__dirname + '/admin.js'));
+app.get('/status.js', (req,res)=>res.sendFile(__dirname + '/status.js'));
 initDb().then(()=>app.listen(PORT,'0.0.0.0',()=>console.log(`GREATER HIGH GRANT listening on ${PORT}`))).catch(err=>{console.error('Database initialization failed',err);process.exit(1);});
